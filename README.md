@@ -1,6 +1,6 @@
-# Mooney Tracker 💰
+# Money Tracker 💰
 
-**Mooney Tracker** is a modern, responsive personal finance tracking application designed to help you manage your money with ease. Built with a focus on simplicity and visual excellence, it allows you to track income, expenses, and manage multiple wallets in one place.
+**Money Tracker** is a modern, responsive personal finance tracking application designed to help you manage your money with ease. Built with a focus on simplicity and visual excellence, it allows you to track income, expenses, and manage multiple wallets in one place.
 
 ## ✨ Features
 
@@ -33,7 +33,7 @@ Make sure you have the following installed:
 1. **Clone the repository**
    ```sh
    git clone <repository-url>
-   cd mooney-tracker
+   cd Money-tracker
    ```
 
 2. **Install dependencies**

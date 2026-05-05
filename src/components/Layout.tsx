@@ -25,7 +25,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
         <div className="container mx-auto px-4 py-4">
           <div className="flex items-center justify-between">
             <div className="flex items-center space-x-3">
-              <h1 className="text-xl font-bold text-gray-800 dark:text-white">Mooney Tracker</h1>
+              <h1 className="text-xl font-bold text-gray-800 dark:text-white">Money Tracker</h1>
             </div>
             <div className="flex items-center space-x-2">
               <ThemeToggle />

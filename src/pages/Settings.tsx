@@ -202,7 +202,7 @@ const Settings: React.FC = () => {
           <div className="space-y-3">
             <div className="flex justify-between items-center py-2 border-b border-border">
               <span className="text-muted-foreground">Nama Aplikasi</span>
-              <span className="font-medium">Mooney Tracker</span>
+              <span className="font-medium">Money Tracker</span>
             </div>
             <div className="flex justify-between items-center py-2 border-b border-border">
               <span className="text-muted-foreground">Versi</span>

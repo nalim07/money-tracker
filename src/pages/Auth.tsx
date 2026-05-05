@@ -64,7 +64,7 @@ const Auth = () => {
     return (
       <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-green-50 via-emerald-50 to-teal-50 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900">
         <div className="text-center">
-          <img src="/logo.png" alt="Mooney Tracker Logo" className="w-12 h-12 rounded-xl mx-auto mb-4 object-cover" />
+          <img src="/logo.png" alt="Money Tracker Logo" className="w-12 h-12 rounded-xl mx-auto mb-4 object-cover" />
           <p className="text-gray-600 dark:text-gray-300">Memuat...</p>
         </div>
       </div>
@@ -75,8 +75,8 @@ const Auth = () => {
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-green-50 via-emerald-50 to-teal-50 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900 p-4">
       <div className="w-full max-w-md">
         <div className="text-center mb-8">
-          <img src="/logo.png" alt="Mooney Tracker Logo" className="w-16 h-16 rounded-2xl mx-auto mb-4 object-cover shadow-lg" />
-          <h1 className="text-2xl font-bold text-gray-800 dark:text-white">Mooney Tracker</h1>
+          <img src="/logo.png" alt="Money Tracker Logo" className="w-16 h-16 rounded-2xl mx-auto mb-4 object-cover shadow-lg" />
+          <h1 className="text-2xl font-bold text-gray-800 dark:text-white">Money Tracker</h1>
           <p className="text-gray-600 dark:text-gray-300 mt-2">Kelola keuangan Anda dengan mudah</p>
         </div>
 
