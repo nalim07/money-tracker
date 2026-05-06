@@ -23,23 +23,22 @@ export default function TransactionsHeader({
   return (
     <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
       <h1 className="text-xl sm:text-2xl font-bold text-gray-800 dark:text-white">Transaksi</h1>
-      <div className="flex gap-2">
+      <div className="grid grid-cols-2 sm:flex sm:flex-wrap gap-2 w-full sm:w-auto">
         <Button
           variant="outline"
           onClick={() => setShowImportDialog(true)}
-          className="flex items-center gap-2"
+          className="flex items-center justify-center gap-1 sm:gap-2 px-2 sm:px-4 col-span-1"
         >
-          <Upload className="w-4 h-4" />
+          <Upload className="w-4 h-4 flex-shrink-0" />
           <span className="hidden sm:inline">Import CSV</span>
-          <span className="sm:hidden">Import</span>
+          <span className="sm:hidden text-sm">Import</span>
         </Button>
-        <ExportButton filteredTransactions={filteredTransactions} />
+        <ExportButton filteredTransactions={filteredTransactions} className="col-span-1" />
         <Dialog open={showAddDialog} onOpenChange={setShowAddDialog}>
           <DialogTrigger asChild>
-            <Button className="bg-finance-primary hover:bg-finance-secondary text-sm sm:text-base">
-              <Plus className="w-4 h-4 mr-1 sm:mr-2" />
-              <span className="hidden sm:inline">Tambah Transaksi</span>
-              <span className="sm:hidden">Tambah</span>
+            <Button className="col-span-2 sm:col-span-1 bg-finance-primary hover:bg-finance-secondary text-sm sm:text-base px-3 sm:px-4 flex items-center justify-center gap-2">
+              <Plus className="w-4 h-4 flex-shrink-0" />
+              <span>Tambah Transaksi</span>
             </Button>
           </DialogTrigger>
           <DialogContent className="w-[95vw] max-w-md mx-auto">

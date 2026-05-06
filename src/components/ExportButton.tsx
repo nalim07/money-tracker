@@ -8,9 +8,10 @@ import { useToast } from '@/hooks/use-toast';
 
 interface ExportButtonProps {
   filteredTransactions?: any[];
+  className?: string;
 }
 
-const ExportButton: React.FC<ExportButtonProps> = ({ filteredTransactions }) => {
+const ExportButton: React.FC<ExportButtonProps> = ({ filteredTransactions, className }) => {
   const { transactions, wallets, categories } = useFinance();
   const { toast } = useToast();
 
@@ -38,10 +39,11 @@ const ExportButton: React.FC<ExportButtonProps> = ({ filteredTransactions }) => 
     <Button
       variant="outline"
       onClick={handleExport}
-      className="flex items-center gap-2"
+      className={`flex items-center justify-center gap-1 sm:gap-2 px-2 sm:px-4 ${className || ''}`}
     >
-      <Download className="w-4 h-4" />
-      Export CSV
+      <Download className="w-4 h-4 flex-shrink-0" />
+      <span className="hidden sm:inline">Export CSV</span>
+      <span className="sm:hidden text-sm">Export</span>
     </Button>
   );
 };

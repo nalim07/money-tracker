@@ -50,12 +50,12 @@ export default function TransactionListItem({
           <p className="font-semibold text-gray-800 dark:text-white text-sm sm:text-base truncate">
             {transaction.description}
           </p>
-          <div className="flex flex-col sm:flex-row sm:items-center sm:space-x-2 text-xs sm:text-sm text-gray-600 dark:text-gray-300">
-            <span>{new Date(transaction.date).toLocaleDateString('id-ID')}</span>
-            <span className="hidden sm:inline">•</span>
-            <span className="truncate">{wallet?.name}</span>
-            <span className="hidden sm:inline">•</span>
-            <span className="truncate">{category?.name || 'Kategori tidak diketahui'}</span>
+          <div className="flex flex-wrap items-center gap-1 sm:gap-2 text-xs sm:text-sm text-gray-600 dark:text-gray-300">
+            <span className="whitespace-nowrap">{new Date(transaction.date).toLocaleDateString('id-ID')}</span>
+            <span className="text-gray-400">•</span>
+            <span className="truncate max-w-[80px] sm:max-w-none">{wallet?.name}</span>
+            <span className="text-gray-400">•</span>
+            <span className="truncate max-w-[80px] sm:max-w-none">{category?.name || 'Lainnya'}</span>
           </div>
         </div>
       </div>

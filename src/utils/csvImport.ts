@@ -237,7 +237,7 @@ export function parseCsvFile(content: string): CsvParseResult {
 
     const tanggal = row[columnMapping.tanggal] || '';
     const jenisTransaksi = columnMapping.jenisTransaksi !== -1 ? (row[columnMapping.jenisTransaksi] || '') : '';
-    const kategori = columnMapping.kategori !== -1 ? (row[columnMapping.kategori] || '') : '';
+    const kategori = columnMapping.kategori !== -1 ? (row[columnMapping.kategori] || '').trim() : '';
     const deskripsi = row[columnMapping.deskripsi] || '';
     const jumlahStr = row[columnMapping.jumlah] || '0';
     const dompet = columnMapping.dompet !== -1 ? (row[columnMapping.dompet] || '').trim() : '';

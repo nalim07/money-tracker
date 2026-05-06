@@ -15,9 +15,11 @@ export const useCategoryOperations = () => {
       const newCategory = transformCategoryData(data);
       setCategories(prev => [...prev, newCategory]);
       toast.showCategoryAdded();
+      return newCategory;
     } catch (error) {
       console.error('Error adding category:', error);
       toast.showCategoryError();
+      throw error;
     }
   };
 
