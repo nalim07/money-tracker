@@ -45,8 +45,8 @@ export default function TransactionsFilters({
   return (
     <Card className="bg-white/70 dark:bg-gray-800/70 backdrop-blur-sm border-green-100 dark:border-gray-700">
       <CardContent className="p-3 sm:p-6">
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 gap-3 sm:gap-4">
-          <div className="sm:col-span-2 lg:col-span-3 xl:col-span-1">
+        <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 gap-3 sm:gap-4">
+          <div className="col-span-2 sm:col-span-2 lg:col-span-3 xl:col-span-1">
             <Label htmlFor="search" className="text-sm">Cari</Label>
             <div className="relative">
               <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />

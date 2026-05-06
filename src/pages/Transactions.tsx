@@ -60,7 +60,7 @@ const Transactions: React.FC = () => {
       />
 
       <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-        <TabsList className="mb-4">
+        <TabsList className="mb-4 w-full grid grid-cols-2">
           <TabsTrigger value="transactions">Riwayat Transaksi</TabsTrigger>
           <TabsTrigger value="wallet-groups">Grup Dompet</TabsTrigger>
         </TabsList>

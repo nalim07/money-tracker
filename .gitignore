@@ -24,3 +24,7 @@ dist-ssr
 *.sln
 *.sw?
 .env
+.env.deploy
+
+# Deploy script (berisi referensi ke kredensial, tidak perlu di-commit)
+# deploy.js

@@ -20,7 +20,7 @@ interface ImportCSVDialogProps {
 type ImportStep = 'upload' | 'preview' | 'mapping' | 'importing' | 'done';
 
 export default function ImportCSVDialog({ open, onOpenChange }: ImportCSVDialogProps) {
-  const { wallets, categories, addTransaction, addCategory, refreshData } = useFinance();
+  const { wallets, categories, transactions, addTransaction, addCategory, refreshData } = useFinance();
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const [step, setStep] = useState<ImportStep>('upload');
@@ -34,6 +34,7 @@ export default function ImportCSVDialog({ open, onOpenChange }: ImportCSVDialogP
   const [importProgress, setImportProgress] = useState(0);
   const [importedCount, setImportedCount] = useState(0);
   const [failedCount, setFailedCount] = useState(0);
+  const [skippedCount, setSkippedCount] = useState(0);
   const [isDragging, setIsDragging] = useState(false);
   const [fileName, setFileName] = useState('');
 
@@ -41,7 +42,7 @@ export default function ImportCSVDialog({ open, onOpenChange }: ImportCSVDialogP
     setStep('upload'); setParsedData([]); setParseErrors([]);
     setCategoryMapping(new Map()); setWalletMapping(new Map());
     setCsvHasWallet(false); setFallbackWallet('');
-    setImportProgress(0); setImportedCount(0); setFailedCount(0);
+    setImportProgress(0); setImportedCount(0); setFailedCount(0); setSkippedCount(0);
     setIsDragging(false); setFileName('');
   }, []);
 
@@ -97,10 +98,11 @@ export default function ImportCSVDialog({ open, onOpenChange }: ImportCSVDialogP
     }
 
     setStep('importing');
-    let imported = 0; let failed = 0;
+    let imported = 0; let failed = 0; let skipped = 0;
 
     // Create missing categories
-    for (const [catName, catId] of categoryMapping.entries()) {
+    const currentCategoryMap = new Map(categoryMapping);
+    for (const [catName, catId] of currentCategoryMap.entries()) {
       if (!catId && catName) {
         try {
           const txs = validData.filter(t => t.categoryName === catName);
@@ -109,7 +111,10 @@ export default function ImportCSVDialog({ open, onOpenChange }: ImportCSVDialogP
           let catType: 'income' | 'expense' | 'both' = 'expense';
           if (hasIncome && hasExpense) catType = 'both';
           else if (hasIncome) catType = 'income';
-          await addCategory({ name: catName, type: catType, color: generateColor(catName), icon: 'tag' });
+          const newCat = await addCategory({ name: catName, type: catType, color: generateColor(catName), icon: 'tag' });
+          if (newCat) {
+            currentCategoryMap.set(catName, newCat.id);
+          }
         } catch { console.error(`Failed to create category: ${catName}`); }
       }
     }
@@ -130,18 +135,40 @@ export default function ImportCSVDialog({ open, onOpenChange }: ImportCSVDialogP
 
       if (!resolvedWallet) { failed++; }
       else {
-        try {
-          await addTransaction({
-            type: item.type, amount: item.amount,
-            description: item.description, category: item.categoryName,
-            wallet: resolvedWallet, date: item.date,
-          });
-          imported++;
-        } catch { failed++; }
+        // Resolve category
+        let resolvedCategory = '';
+        if (item.categoryName) {
+          resolvedCategory = currentCategoryMap.get(item.categoryName) || '';
+        }
+
+        // Cek duplikasi berdasarkan tipe, jumlah, deskripsi, dompet, tanggal, dan kategori
+        const isDuplicate = transactions.some(t => 
+          t.type === item.type &&
+          t.amount === item.amount &&
+          t.description.trim().toLowerCase() === item.description.trim().toLowerCase() &&
+          t.wallet === resolvedWallet &&
+          t.category === resolvedCategory &&
+          t.date.getFullYear() === item.date.getFullYear() &&
+          t.date.getMonth() === item.date.getMonth() &&
+          t.date.getDate() === item.date.getDate()
+        );
+
+        if (isDuplicate) {
+          skipped++;
+        } else {
+          try {
+            await addTransaction({
+              type: item.type, amount: item.amount,
+              description: item.description, category: resolvedCategory,
+              wallet: resolvedWallet, date: item.date,
+            });
+            imported++;
+          } catch { failed++; }
+        }
       }
 
       setImportProgress(Math.round(((i + 1) / validData.length) * 100));
-      setImportedCount(imported); setFailedCount(failed);
+      setImportedCount(imported); setFailedCount(failed); setSkippedCount(skipped);
       if (i % 5 === 0) await new Promise(r => setTimeout(r, 100));
     }
     setStep('done');
@@ -418,7 +445,7 @@ export default function ImportCSVDialog({ open, onOpenChange }: ImportCSVDialogP
               </div>
               <div className="text-center">
                 <p className="text-lg font-semibold">Mengimport data...</p>
-                <p className="text-sm text-muted-foreground mt-1">{importedCount + failedCount} dari {validData.length} transaksi</p>
+                <p className="text-sm text-muted-foreground mt-1">{importedCount + failedCount + skippedCount} dari {validData.length} transaksi</p>
               </div>
               <div className="w-full space-y-2">
                 <Progress value={importProgress} className="h-3" />
@@ -426,6 +453,7 @@ export default function ImportCSVDialog({ open, onOpenChange }: ImportCSVDialogP
                   <span>{importProgress}%</span>
                   <div className="flex gap-3">
                     <span className="text-emerald-500">✓ {importedCount} berhasil</span>
+                    {skippedCount > 0 && <span className="text-blue-500">○ {skippedCount} dilewati</span>}
                     {failedCount > 0 && <span className="text-red-500">✕ {failedCount} gagal</span>}
                   </div>
                 </div>
@@ -441,12 +469,16 @@ export default function ImportCSVDialog({ open, onOpenChange }: ImportCSVDialogP
               </div>
               <div className="text-center">
                 <p className="text-lg font-semibold">{failedCount === 0 ? 'Import Berhasil!' : 'Import Selesai dengan Peringatan'}</p>
-                <p className="text-sm text-muted-foreground mt-1">{importedCount} berhasil{failedCount > 0 && `, ${failedCount} gagal`}</p>
+                <p className="text-sm text-muted-foreground mt-1">{importedCount} berhasil{skippedCount > 0 && `, ${skippedCount} dilewati (duplikat)`}{failedCount > 0 && `, ${failedCount} gagal`}</p>
               </div>
-              <div className="grid grid-cols-2 gap-3 w-full">
+              <div className="grid grid-cols-3 gap-3 w-full">
                 <div className="p-3 rounded-lg bg-emerald-500/10 text-center">
                   <p className="text-2xl font-bold text-emerald-500">{importedCount}</p>
                   <p className="text-xs text-emerald-600 dark:text-emerald-400">Berhasil</p>
+                </div>
+                <div className="p-3 rounded-lg bg-blue-500/10 text-center">
+                  <p className="text-2xl font-bold text-blue-500">{skippedCount}</p>
+                  <p className="text-xs text-blue-600 dark:text-blue-400">Dilewati</p>
                 </div>
                 <div className="p-3 rounded-lg bg-red-500/10 text-center">
                   <p className="text-2xl font-bold text-red-500">{failedCount}</p>
