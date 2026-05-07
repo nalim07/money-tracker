@@ -39,7 +39,7 @@ export const transactionService = {
         description: transaction.description,
         category: transaction.category,
         wallet: transaction.wallet,
-        date: transaction.date.toISOString().split('T')[0],
+        date: `${transaction.date.getFullYear()}-${String(transaction.date.getMonth() + 1).padStart(2, '0')}-${String(transaction.date.getDate()).padStart(2, '0')}`,
         user_id: user.id
       }])
       .select()
@@ -63,7 +63,7 @@ export const transactionService = {
     if (updates.description) updateData.description = updates.description;
     if (updates.category) updateData.category = updates.category;
     if (updates.wallet) updateData.wallet = updates.wallet;
-    if (updates.date) updateData.date = updates.date.toISOString().split('T')[0];
+    if (updates.date) updateData.date = `${updates.date.getFullYear()}-${String(updates.date.getMonth() + 1).padStart(2, '0')}-${String(updates.date.getDate()).padStart(2, '0')}`;
 
     const { error } = await supabase
       .from('transactions')

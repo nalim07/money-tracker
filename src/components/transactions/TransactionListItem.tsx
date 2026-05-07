@@ -55,7 +55,7 @@ export default function TransactionListItem({
             <span className="text-gray-400">•</span>
             <span className="truncate max-w-[80px] sm:max-w-none">{wallet?.name}</span>
             <span className="text-gray-400">•</span>
-            <span className="truncate max-w-[80px] sm:max-w-none">{category?.name || 'Lainnya'}</span>
+            <span className="truncate max-w-[80px] sm:max-w-none">{category?.name || (transaction.category === 'Transfer' ? 'Transfer' : 'Lainnya')}</span>
           </div>
         </div>
       </div>
