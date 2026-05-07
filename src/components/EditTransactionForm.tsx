@@ -28,7 +28,7 @@ const EditTransactionForm: React.FC<EditTransactionFormProps> = ({
     description: transaction.description,
     category: transaction.category,
     wallet: transaction.wallet,
-    date: new Date(transaction.date).toISOString().split('T')[0],
+    date: (() => { const d = new Date(transaction.date); return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`; })(),
   });
 
   const availableCategories = categories.filter(cat => 
@@ -112,7 +112,7 @@ const EditTransactionForm: React.FC<EditTransactionFormProps> = ({
               </SelectTrigger>
               <SelectContent>
                 {availableCategories.map(category => (
-                  <SelectItem key={category.id} value={category.name}>
+                  <SelectItem key={category.id} value={category.id}>
                     {category.name}
                   </SelectItem>
                 ))}

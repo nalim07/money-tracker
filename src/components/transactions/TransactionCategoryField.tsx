@@ -32,7 +32,11 @@ export default function TransactionCategoryField({ control, categories }: Transa
       render={({ field }) => (
         <FormItem>
           <FormLabel>Kategori</FormLabel>
-          <Select onValueChange={field.onChange} value={field.value}>
+          <Select 
+            key={`${field.value}-${categories.map(c => c.id).join(',')}`}
+            onValueChange={field.onChange} 
+            value={field.value}
+          >
             <FormControl>
               <SelectTrigger>
                 <SelectValue placeholder="Pilih kategori" />

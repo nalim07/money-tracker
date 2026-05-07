@@ -158,7 +158,7 @@ export default function Home() {
                         <span className="font-medium">{transaction.description}</span>
                       </div>
                       <div className="text-sm text-muted-foreground mt-1">
-                        {transaction.date.toLocaleDateString('id-ID')} • {wallet?.name} • {category?.name || 'Kategori tidak diketahui'}
+                        {transaction.date.toLocaleDateString('id-ID')} • {wallet?.name} • {category?.name || (transaction.category === 'Transfer' ? 'Transfer' : 'Lainnya')}
                       </div>
                     </div>
                     <div className={`font-bold ${transaction.type === 'income' ? 'text-green-600' : 'text-red-600'}`}>

@@ -8,7 +8,7 @@ export const transformTransactionData = (data: any): Transaction => ({
   description: data.description,
   category: data.category,
   wallet: data.wallet,
-  date: new Date(data.date),
+  date: new Date(data.date + 'T00:00:00'),
   createdAt: new Date(data.created_at)
 });
 

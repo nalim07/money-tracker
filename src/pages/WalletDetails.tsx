@@ -103,7 +103,7 @@ const WalletDetails: React.FC = () => {
                           year: 'numeric', 
                           month: 'long', 
                           day: 'numeric'
-                        })} • {category?.name || 'Kategori tidak diketahui'}
+                        })} • {category?.name || (transaction.category === 'Transfer' ? 'Transfer' : 'Lainnya')}
                       </div>
                     </div>
                     <div className="flex items-center space-x-4">

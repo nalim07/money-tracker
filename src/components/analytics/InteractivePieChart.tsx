@@ -40,7 +40,7 @@ const InteractivePieChart: React.FC<InteractivePieChartProps> = ({
         .filter(cat => cat.type === type || cat.type === 'both')
         .map(category => {
           const total = transactions
-            .filter(t => t.type === type && t.category === category.name)
+            .filter(t => t.type === type && t.category === category.id)
             .reduce((sum, t) => sum + t.amount, 0);
           return {
             name: category.name,

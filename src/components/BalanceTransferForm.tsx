@@ -13,7 +13,7 @@ interface BalanceTransferFormProps {
 }
 
 export default function BalanceTransferForm({ onClose }: BalanceTransferFormProps) {
-  const { wallets, addTransaction } = useFinance();
+  const { wallets, categories, addTransaction } = useFinance();
   const [sourceWallet, setSourceWallet] = useState('');
   const [destinationWallet, setDestinationWallet] = useState('');
   const [amount, setAmount] = useState('');
@@ -42,13 +42,21 @@ export default function BalanceTransferForm({ onClose }: BalanceTransferFormProp
 
     try {
       const transferDescription = description || 'Transfer antar dompet';
+      
+      // Try to find a category named 'Transfer' to get its ID
+      const transferCategory = categories.find(c => 
+        c.name.toLowerCase() === 'transfer' || 
+        c.name.toLowerCase() === 'saldo'
+      );
+      
+      const categoryId = transferCategory ? transferCategory.id : 'Transfer';
 
       // Create expense transaction from source wallet
       await addTransaction({
         type: 'expense',
         amount: transferAmount,
         description: `${transferDescription} (keluar)`,
-        category: 'Transfer',
+        category: categoryId,
         wallet: sourceWallet,
         date: new Date(),
       });
@@ -58,7 +66,7 @@ export default function BalanceTransferForm({ onClose }: BalanceTransferFormProp
         type: 'income',
         amount: transferAmount,
         description: `${transferDescription} (masuk)`,
-        category: 'Transfer',
+        category: categoryId,
         wallet: destinationWallet,
         date: new Date(),
       });

@@ -1,25 +1,19 @@
-# Issue: Mobile UI Responsiveness and CSV Import Logic Fixes
+# Issue: CSV Date Offset and Transfer Category Display
 
 ## Description
-The `/transactions` page had horizontal scrolling issues on mobile, and the CSV import logic was creating duplicates and failing to resolve category IDs correctly (showing "Kategori tidak diketahui").
+1. CSV import results in dates being shifted backwards by 1 day due to UTC conversion (using `toISOString()`).
+2. Balance transfers show "Kategori tidak diketahui" on the Home and Wallet Details pages because the 'Transfer' category string doesn't match any existing category ID.
+3. Category dropdown in Add Transaction form is not synchronized when the transaction type changes.
+4. Analytics chart shows 0 data because it filters by category name instead of ID.
 
-## Goals
-- Fix horizontal scrolling on mobile.
-- Implement deduplication logic for CSV import.
-- Fix category mapping to store IDs instead of names.
-- Update UI to show skipped (duplicate) transactions during import.
+## Root Cause
+1. `toISOString()` converts local time to UTC, causing a -1 day shift for UTC+7 users.
+2. `BalanceTransferForm` hardcodes the category as the string 'Transfer', which is not a valid UUID ID in the database.
+3. The `Select` component doesn't re-render its options properly when the available categories change without a value reset or key change.
+4. `InteractivePieChart.tsx` logic incorrectly compares `transaction.category` (ID) with `category.name`.
 
-## Changes
-- Updated `Layout.tsx` with `min-w-0` to prevent overflow.
-- Restructured `TransactionsHeader.tsx` buttons for mobile grid.
-- Adjusted `TransactionsFilters.tsx` to 2 columns on mobile.
-- Added `truncate` and `flex-wrap` to `TransactionListItem.tsx`.
-- Modified `ImportCSVDialog.tsx` to include `transactions` for deduplication.
-- Added `skippedCount` to import process.
-- Updated `csvImport.ts` to trim category names.
-- Modified `useCategoryOperations.ts` to return the created category object.
-
-## Verification
-- Checked mobile view for horizontal scroll.
-- Verified CSV import skips existing transactions.
-- Verified categories are correctly resolved after import.
+## Proposed Solution
+1. Use local date serialization (YYYY-MM-DD) and parse with local midnight (`T00:00:00`).
+2. Add fallbacks in UI for 'Transfer' string and improve `BalanceTransferForm` to lookup real category IDs.
+3. Use `useEffect` to reset category on type change and add a dynamic `key` to the `Select` component.
+4. Fix the filtering logic in `InteractivePieChart.tsx` to use IDs.
