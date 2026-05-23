@@ -55,7 +55,7 @@ function parseIndonesianDate(dateStr: string): Date | null {
   };
 
   // Try DD/MM/YYYY or DD-MM-YYYY
-  const slashMatch = cleaned.match(/^(\d{1,2})[\/\-](\d{1,2})[\/\-](\d{4})$/);
+  const slashMatch = cleaned.match(/^(\d{1,2})[/-](\d{1,2})[/-](\d{4})$/);
   if (slashMatch) {
     const day = parseInt(slashMatch[1]);
     const month = parseInt(slashMatch[2]) - 1;
