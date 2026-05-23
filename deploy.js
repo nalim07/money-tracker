@@ -42,8 +42,8 @@ const config = {
   localRoot: path.join(__dirname, "dist"),
   remoteRoot: process.env.FTP_PATH,
 
-  // Upload semua file dari dist/
-  include: ["*", "**/*"],
+  // Upload semua file dari dist/, termasuk dotfile untuk SPA fallback.
+  include: ["*", "**/*", ".htaccess"],
 
   // Hapus file lama di server sebelum upload (bersih)
   deleteRemote: process.env.FTP_DELETE_REMOTE === "true",
