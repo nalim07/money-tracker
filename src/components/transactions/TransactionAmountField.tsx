@@ -25,11 +25,14 @@ export default function TransactionAmountField({ control }: TransactionAmountFie
           <FormLabel>Jumlah</FormLabel>
           <FormControl>
             <Input
-              type="number"
+              type="text"
               placeholder="0"
-              step="0.01"
-              min="0"
-              {...field}
+              value={field.value !== undefined && field.value !== null && field.value !== '' ? new Intl.NumberFormat('id-ID').format(Number(field.value)) : ''}
+              onChange={(e) => {
+                const clean = e.target.value.replace(/\D/g, '');
+                field.onChange(clean);
+              }}
+              className="rounded-xl border-gray-200 focus-visible:ring-primary dark:border-zinc-800"
             />
           </FormControl>
           <FormMessage />

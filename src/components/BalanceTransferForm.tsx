@@ -10,12 +10,18 @@ import { ArrowRight } from 'lucide-react';
 
 interface BalanceTransferFormProps {
   onClose?: () => void;
+  defaultSourceWalletId?: string;
+  defaultDestinationWalletId?: string;
 }
 
-export default function BalanceTransferForm({ onClose }: BalanceTransferFormProps) {
+export default function BalanceTransferForm({ 
+  onClose,
+  defaultSourceWalletId,
+  defaultDestinationWalletId
+}: BalanceTransferFormProps) {
   const { wallets, categories, addTransaction } = useFinance();
-  const [sourceWallet, setSourceWallet] = useState('');
-  const [destinationWallet, setDestinationWallet] = useState('');
+  const [sourceWallet, setSourceWallet] = useState(defaultSourceWalletId || '');
+  const [destinationWallet, setDestinationWallet] = useState(defaultDestinationWalletId || '');
   const [amount, setAmount] = useState('');
   const [description, setDescription] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -155,12 +161,13 @@ export default function BalanceTransferForm({ onClose }: BalanceTransferFormProp
             <Label htmlFor="amount">Jumlah Transfer</Label>
             <Input
               id="amount"
-              type="number"
-              value={amount}
-              onChange={(e) => setAmount(e.target.value)}
+              type="text"
+              value={amount !== '' ? new Intl.NumberFormat('id-ID').format(Number(amount)) : ''}
+              onChange={(e) => {
+                const clean = e.target.value.replace(/\D/g, '');
+                setAmount(clean);
+              }}
               placeholder="0"
-              min="0"
-              step="0.01"
               required
             />
           </div>

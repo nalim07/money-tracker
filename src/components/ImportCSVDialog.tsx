@@ -179,7 +179,7 @@ export default function ImportCSVDialog({ open, onOpenChange }: ImportCSVDialogP
 
   return (
     <Dialog open={open} onOpenChange={handleOpenChange}>
-      <DialogContent className="w-[95vw] max-w-2xl mx-auto max-h-[90vh] overflow-hidden flex flex-col">
+      <DialogContent className="w-[95vw] max-w-2xl mx-auto max-h-[90vh] overflow-hidden flex flex-col rounded-3xl">
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2">
             <FileSpreadsheet className="w-5 h-5 text-emerald-500" /> Import CSV

@@ -90,31 +90,32 @@ const CategoryManager: React.FC = () => {
               Tambah Kategori
             </Button>
           </DialogTrigger>
-          <DialogContent className="sm:max-w-md">
+          <DialogContent className="w-[95vw] max-w-md mx-auto rounded-3xl">
             <DialogHeader>
-              <DialogTitle>Tambah Kategori Baru</DialogTitle>
+              <DialogTitle className="text-sm sm:text-base font-extrabold text-foreground">Tambah Kategori Baru</DialogTitle>
             </DialogHeader>
             <form onSubmit={handleSubmit} className="space-y-4">
-              <div>
-                <Label htmlFor="category-name">Nama Kategori</Label>
+              <div className="space-y-1.5">
+                <Label htmlFor="category-name" className="text-xs font-bold">Nama Kategori</Label>
                 <Input
                   id="category-name"
                   value={form.name}
                   onChange={(e) => setForm(prev => ({ ...prev, name: e.target.value }))}
                   placeholder="Contoh: Kesehatan"
                   required
+                  className="rounded-xl border-gray-200 focus-visible:ring-primary dark:border-zinc-800"
                 />
               </div>
 
-              <div>
-                <Label htmlFor="category-type">Tipe Kategori</Label>
+              <div className="space-y-1.5">
+                <Label htmlFor="category-type" className="text-xs font-bold">Tipe Kategori</Label>
                 <Select 
                   value={form.type} 
                   onValueChange={(value: 'income' | 'expense' | 'both') => 
                     setForm(prev => ({ ...prev, type: value }))
                   }
                 >
-                  <SelectTrigger>
+                  <SelectTrigger className="rounded-xl border-gray-200 focus-visible:ring-primary dark:border-zinc-800">
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent>
@@ -124,20 +125,25 @@ const CategoryManager: React.FC = () => {
                 </Select>
               </div>
 
-              <IconSelector
-                selectedIcon={form.icon}
-                onIconSelect={(icon) => setForm(prev => ({ ...prev, icon }))}
-              />
+              <div className="space-y-1.5">
+                <Label className="text-xs font-bold">Logo/Ikon Kategori</Label>
+                <div className="max-h-[180px] overflow-y-auto border border-gray-150 dark:border-zinc-800 rounded-xl p-3 bg-muted/10">
+                  <IconSelector
+                    selectedIcon={form.icon}
+                    onIconSelect={(icon) => setForm(prev => ({ ...prev, icon }))}
+                  />
+                </div>
+              </div>
 
-              <div>
-                <Label>Warna</Label>
-                <div className="grid grid-cols-4 gap-2 mt-2">
+              <div className="space-y-1.5">
+                <Label className="text-xs font-bold">Warna</Label>
+                <div className="grid grid-cols-4 gap-2 mt-1">
                   {colorOptions.map((color) => (
                     <button
                       key={color}
                       type="button"
-                      className={`w-10 h-10 rounded-lg border-2 ${
-                        form.color === color ? 'border-foreground' : 'border-border'
+                      className={`w-10 h-10 rounded-xl border-2 transition-all ${
+                        form.color === color ? 'border-foreground scale-105 shadow-sm' : 'border-transparent hover:scale-105'
                       }`}
                       style={{ backgroundColor: color }}
                       onClick={() => setForm(prev => ({ ...prev, color }))}
@@ -146,15 +152,15 @@ const CategoryManager: React.FC = () => {
                 </div>
               </div>
 
-              <div className="flex gap-2 pt-4">
-                <Button type="submit" className="flex-1 bg-finance-primary hover:bg-finance-secondary">
+              <div className="flex gap-2 pt-2">
+                <Button type="submit" className="flex-1 bg-primary hover:bg-primary/95 text-white font-bold h-10 rounded-xl text-xs shadow-sm">
                   Simpan
                 </Button>
                 <Button 
                   type="button" 
                   variant="outline" 
                   onClick={() => setShowDialog(false)}
-                  className="flex-1"
+                  className="flex-1 rounded-xl font-bold h-10 text-xs"
                 >
                   Batal
                 </Button>

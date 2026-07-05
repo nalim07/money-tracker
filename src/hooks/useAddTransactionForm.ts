@@ -11,9 +11,11 @@ import {
 
 export interface UseAddTransactionFormProps {
   onClose?: () => void;
+  defaultWalletId?: string;
+  defaultType?: 'income' | 'expense';
 }
 
-export function useAddTransactionForm({ onClose }: UseAddTransactionFormProps) {
+export function useAddTransactionForm({ onClose, defaultWalletId, defaultType }: UseAddTransactionFormProps) {
   const { addTransaction, wallets, categories, getWalletBalance } = useFinance();
   const [isLoading, setIsLoading] = useState(false);
 
@@ -23,8 +25,8 @@ export function useAddTransactionForm({ onClose }: UseAddTransactionFormProps) {
       amount: '',
       description: '',
       category: '',
-      wallet: '',
-      type: 'expense',
+      wallet: defaultWalletId || '',
+      type: defaultType || 'expense',
       date: `${new Date().getFullYear()}-${String(new Date().getMonth() + 1).padStart(2, '0')}-${String(new Date().getDate()).padStart(2, '0')}`,
     },
   });

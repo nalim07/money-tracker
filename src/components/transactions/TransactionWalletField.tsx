@@ -63,7 +63,7 @@ export default function TransactionWalletField({ control, wallets }: Transaction
           <FormLabel>Dompet</FormLabel>
           <Select onValueChange={field.onChange} value={field.value}>
             <FormControl>
-              <SelectTrigger>
+              <SelectTrigger className="rounded-xl border-gray-200 focus-visible:ring-primary dark:border-zinc-800">
                 <SelectValue placeholder="Pilih dompet" />
               </SelectTrigger>
             </FormControl>

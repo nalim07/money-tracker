@@ -17,6 +17,9 @@ export interface Wallet {
   icon: string;
   balance: number;
   group?: string;
+  isSavings?: boolean;
+  targetAmount?: number;
+  actualGroup?: string;
 }
 
 export interface Category {

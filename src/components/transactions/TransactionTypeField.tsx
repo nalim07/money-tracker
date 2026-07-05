@@ -31,7 +31,7 @@ export default function TransactionTypeField({ control }: TransactionTypeFieldPr
           <FormLabel>Tipe</FormLabel>
           <Select onValueChange={field.onChange} defaultValue={field.value}>
             <FormControl>
-              <SelectTrigger>
+              <SelectTrigger className="rounded-xl border-gray-200 focus-visible:ring-primary dark:border-zinc-800">
                 <SelectValue placeholder="Pilih tipe transaksi" />
               </SelectTrigger>
             </FormControl>

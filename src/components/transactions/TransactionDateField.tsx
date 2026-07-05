@@ -24,7 +24,7 @@ export default function TransactionDateField({ control }: TransactionDateFieldPr
         <FormItem>
           <FormLabel>Tanggal</FormLabel>
           <FormControl>
-            <Input type="date" {...field} />
+            <Input type="date" {...field} className="rounded-xl border-gray-200 focus-visible:ring-primary dark:border-zinc-800" />
           </FormControl>
           <FormMessage />
         </FormItem>

@@ -7,9 +7,15 @@ import BalanceTransferForm from './BalanceTransferForm';
 
 interface BalanceTransferDialogProps {
   trigger?: React.ReactNode;
+  defaultSourceWalletId?: string;
+  defaultDestinationWalletId?: string;
 }
 
-export default function BalanceTransferDialog({ trigger }: BalanceTransferDialogProps) {
+export default function BalanceTransferDialog({ 
+  trigger,
+  defaultSourceWalletId,
+  defaultDestinationWalletId
+}: BalanceTransferDialogProps) {
   const [open, setOpen] = useState(false);
 
   return (
@@ -22,8 +28,12 @@ export default function BalanceTransferDialog({ trigger }: BalanceTransferDialog
           </Button>
         )}
       </DialogTrigger>
-      <DialogContent className="sm:max-w-[425px]">
-        <BalanceTransferForm onClose={() => setOpen(false)} />
+      <DialogContent className="sm:max-w-[425px] rounded-3xl">
+        <BalanceTransferForm 
+          onClose={() => setOpen(false)} 
+          defaultSourceWalletId={defaultSourceWalletId}
+          defaultDestinationWalletId={defaultDestinationWalletId}
+        />
       </DialogContent>
     </Dialog>
   );

@@ -50,31 +50,32 @@ const EditCategoryForm: React.FC<EditCategoryFormProps> = ({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-md">
+      <DialogContent className="w-[95vw] max-w-md mx-auto rounded-3xl">
         <DialogHeader>
-          <DialogTitle>Edit Kategori</DialogTitle>
+          <DialogTitle className="text-sm sm:text-base font-extrabold text-foreground">Edit Kategori</DialogTitle>
         </DialogHeader>
         <form onSubmit={handleSubmit} className="space-y-4">
-          <div>
-            <Label htmlFor="category-name">Nama Kategori</Label>
+          <div className="space-y-1.5">
+            <Label htmlFor="category-name" className="text-xs font-bold">Nama Kategori</Label>
             <Input
               id="category-name"
               value={formData.name}
               onChange={(e) => setFormData(prev => ({ ...prev, name: e.target.value }))}
               placeholder="Contoh: Kesehatan"
               required
+              className="rounded-xl border-gray-200 focus-visible:ring-primary dark:border-zinc-800"
             />
           </div>
 
-          <div>
-            <Label htmlFor="category-type">Tipe Kategori</Label>
+          <div className="space-y-1.5">
+            <Label htmlFor="category-type" className="text-xs font-bold">Tipe Kategori</Label>
             <Select 
               value={formData.type} 
               onValueChange={(value: 'income' | 'expense' | 'both') => 
                 setFormData(prev => ({ ...prev, type: value }))
               }
             >
-              <SelectTrigger>
+              <SelectTrigger className="rounded-xl border-gray-200 focus-visible:ring-primary dark:border-zinc-800">
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
@@ -84,20 +85,25 @@ const EditCategoryForm: React.FC<EditCategoryFormProps> = ({
             </Select>
           </div>
 
-          <IconSelector
-            selectedIcon={formData.icon}
-            onIconSelect={(icon) => setFormData(prev => ({ ...prev, icon }))}
-          />
+          <div className="space-y-1.5">
+            <Label className="text-xs font-bold">Logo/Ikon Kategori</Label>
+            <div className="max-h-[180px] overflow-y-auto border border-gray-150 dark:border-zinc-800 rounded-xl p-3 bg-muted/10">
+              <IconSelector
+                selectedIcon={formData.icon}
+                onIconSelect={(icon) => setFormData(prev => ({ ...prev, icon }))}
+              />
+            </div>
+          </div>
 
-          <div>
-            <Label>Warna</Label>
-            <div className="grid grid-cols-4 gap-2 mt-2">
+          <div className="space-y-1.5">
+            <Label className="text-xs font-bold">Warna</Label>
+            <div className="grid grid-cols-4 gap-2 mt-1">
               {colorOptions.map((color) => (
                 <button
                   key={color}
                   type="button"
-                  className={`w-10 h-10 rounded-lg border-2 ${
-                    formData.color === color ? 'border-foreground' : 'border-border'
+                  className={`w-10 h-10 rounded-xl border-2 transition-all ${
+                    formData.color === color ? 'border-foreground scale-105 shadow-sm' : 'border-transparent hover:scale-105'
                   }`}
                   style={{ backgroundColor: color }}
                   onClick={() => setFormData(prev => ({ ...prev, color }))}
@@ -106,15 +112,15 @@ const EditCategoryForm: React.FC<EditCategoryFormProps> = ({
             </div>
           </div>
 
-          <div className="flex gap-2 pt-4">
-            <Button type="submit" className="flex-1 bg-finance-primary hover:bg-finance-secondary">
+          <div className="flex gap-2 pt-2">
+            <Button type="submit" className="flex-1 bg-primary hover:bg-primary/95 text-white font-bold h-10 rounded-xl text-xs shadow-sm">
               Simpan Perubahan
             </Button>
             <Button 
               type="button" 
               variant="outline" 
               onClick={() => onOpenChange(false)}
-              className="flex-1"
+              className="flex-1 rounded-xl font-bold h-10 text-xs"
             >
               Batal
             </Button>
