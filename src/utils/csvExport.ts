@@ -5,6 +5,10 @@ import { Transaction, Wallet, Category } from '../types/finance';
  * Export transactions to CSV with the same column format as import.
  * Columns: Tanggal, Jenis Transaksi, Kategori, Deskripsi/Keterangan, Dompet, Jumlah (Rp)
  */
+const isUUID = (str: string): boolean => {
+  return /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(str.trim());
+};
+
 export const exportTransactionsToCSV = (
   transactions: Transaction[],
   wallets: Wallet[],
@@ -14,15 +18,27 @@ export const exportTransactionsToCSV = (
 
   const rows = transactions.map(transaction => {
     const wallet = wallets.find(w => w.id === transaction.wallet);
-    const category = categories.find(c => c.id === transaction.category || c.name === transaction.category);
+    
+    // Perform robust case-insensitive and trimmed lookup
+    const category = categories.find(c => {
+      const catId = (c.id || '').trim().toLowerCase();
+      const catName = (c.name || '').trim().toLowerCase();
+      const txCat = (transaction.category || '').trim().toLowerCase();
+      return catId === txCat || catName === txCat;
+    });
+
     const dateStr = new Date(transaction.date).toLocaleDateString('id-ID', {
       day: '2-digit', month: '2-digit', year: 'numeric'
     });
 
+    const categoryName = category
+      ? (isUUID(category.name) ? 'Lainnya' : category.name)
+      : (isUUID(transaction.category) ? 'Lainnya' : (transaction.category || 'Lainnya'));
+
     return [
       dateStr,
       transaction.type === 'income' ? 'Pemasukan' : 'Pengeluaran',
-      category?.name || transaction.category,
+      categoryName,
       transaction.description,
       wallet?.name || '',
       transaction.amount.toString(),
