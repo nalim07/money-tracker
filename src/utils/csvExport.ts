@@ -14,7 +14,7 @@ export const exportTransactionsToCSV = (
 
   const rows = transactions.map(transaction => {
     const wallet = wallets.find(w => w.id === transaction.wallet);
-    const category = categories.find(c => c.name === transaction.category);
+    const category = categories.find(c => c.id === transaction.category || c.name === transaction.category);
     const dateStr = new Date(transaction.date).toLocaleDateString('id-ID', {
       day: '2-digit', month: '2-digit', year: 'numeric'
     });
