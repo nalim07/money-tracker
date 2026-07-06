@@ -419,7 +419,7 @@ const Transactions: React.FC = () => {
                                 {transaction.type === 'income' ? '+' : '-'} Rp {transaction.amount.toLocaleString('id-ID')}
                               </span>
                               <span className="text-[9px] text-muted-foreground block mt-0.5">
-                                {new Date(transaction.date).toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' })}
+                                {transaction.createdAt ? new Date(transaction.createdAt).toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' }) : ''}
                               </span>
                             </div>
 

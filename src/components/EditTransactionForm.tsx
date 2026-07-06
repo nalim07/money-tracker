@@ -46,7 +46,13 @@ const EditTransactionForm: React.FC<EditTransactionFormProps> = ({
       description: formData.description,
       category: formData.category,
       wallet: formData.wallet,
-      date: new Date(formData.date),
+      date: (() => {
+        // Pertahankan jam asli dari transaksi, hanya ubah tanggalnya
+        const original = new Date(transaction.date);
+        const updated = new Date(formData.date + 'T00:00:00');
+        updated.setHours(original.getHours(), original.getMinutes(), original.getSeconds());
+        return updated;
+      })(),
     });
 
     onOpenChange(false);
