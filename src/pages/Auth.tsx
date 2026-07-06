@@ -73,13 +73,11 @@ const Auth = () => {
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-zinc-50 via-[#FFFBEB] to-[#F5F3FF] dark:from-[#09090B] dark:via-zinc-950 dark:to-zinc-900 p-4">
       <div className="w-full max-w-md space-y-6">
         <div className="text-center space-y-2">
-          <div className="w-14 h-14 bg-gradient-to-br from-[#FFB400] to-[#7357FF] p-[2.5px] rounded-2xl mx-auto shadow-md flex items-center justify-center">
-            <div className="bg-white dark:bg-[#09090B] w-full h-full rounded-2xl flex items-center justify-center">
-              <Sparkles className="w-6 h-6 text-[#FFB400]" />
-            </div>
+          <div className="flex items-center justify-center">
+            <img src="/logo.png" alt="Money Tracker Logo" className="w-14 h-14 rounded-xl object-contain flex-shrink-0" />
           </div>
           <h1 className="text-2xl font-black text-foreground tracking-tight flex items-center justify-center gap-1">
-            FINADI
+            Money Tracker
           </h1>
           <p className="text-xs text-muted-foreground">Kelola keuangan Anda dengan cerdas dan mudah</p>
         </div>
