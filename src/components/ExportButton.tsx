@@ -54,7 +54,7 @@ const ExportButton: React.FC<ExportButtonProps> = ({ filteredTransactions, class
           .select('*')
           .in('id', missingIds);
 
-        if (!error && extraCategories) {
+        if (!error && extraCategories && extraCategories.length > 0) {
           const mapped: Category[] = extraCategories.map((c: any) => ({
             id: c.id,
             name: c.name,
@@ -63,6 +63,8 @@ const ExportButton: React.FC<ExportButtonProps> = ({ filteredTransactions, class
             icon: c.icon,
           }));
           allCategories = [...allCategories, ...mapped];
+        } else if (error) {
+          console.warn('Gagal fetch kategori missing, akan pakai fallback:', error.message);
         }
       }
 
