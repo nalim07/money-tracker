@@ -1,4 +1,3 @@
-
 import { Transaction, Wallet, Category } from '../types/finance';
 
 /**
@@ -17,36 +16,41 @@ export const exportTransactionsToCSV = (
   const headers = ['Tanggal', 'Jenis Transaksi', 'Kategori', 'Deskripsi/Keterangan', 'Dompet', 'Jumlah (Rp)'];
 
   const rows = transactions.map(transaction => {
+    // Lookup wallet by ID
     const wallet = wallets.find(w => w.id === transaction.wallet);
     
-    // Perform robust case-insensitive and trimmed lookup
-    const category = categories.find(c => {
-      const catId = (c.id || '').trim().toLowerCase();
-      const catName = (c.name || '').trim().toLowerCase();
-      const txCat = (transaction.category || '').trim().toLowerCase();
-      return catId === txCat || catName === txCat;
-    });
+    // Lookup category by ID first, then by name
+    const category = categories.find(c => c.id === transaction.category) || 
+                     categories.find(c => c.name.toLowerCase() === (transaction.category || '').toLowerCase());
 
     const dateStr = new Date(transaction.date).toLocaleDateString('id-ID', {
       day: '2-digit', month: '2-digit', year: 'numeric'
     });
 
+    // Use category name if found, otherwise never show raw UUID — fallback to 'Lainnya'
     const categoryName = category
-      ? (isUUID(category.name) ? 'Lainnya' : category.name)
-      : (isUUID(transaction.category) ? 'Lainnya' : (transaction.category || 'Lainnya'));
+      ? category.name
+      : (transaction.category && !isUUID(transaction.category) ? transaction.category : 'Lainnya');
+
+    // Use wallet name if found, otherwise never show raw UUID
+    const walletName = wallet
+      ? wallet.name
+      : (transaction.wallet && !isUUID(transaction.wallet) ? transaction.wallet : '');
 
     return [
       dateStr,
       transaction.type === 'income' ? 'Pemasukan' : 'Pengeluaran',
       categoryName,
       transaction.description,
-      wallet?.name || '',
+      walletName,
       transaction.amount.toString(),
     ];
   });
 
-  const csvContent = [headers, ...rows]
-    .map(row => row.map(cell => `"${cell}"`).join(','))
+  // Add UTF-8 BOM for proper Excel compatibility with Indonesian characters
+  const BOM = '\uFEFF';
+  const csvContent = BOM + [headers, ...rows]
+    .map(row => row.map(cell => `"${String(cell).replace(/"/g, '""')}"`).join(','))
     .join('\n');
 
   triggerDownload(csvContent, `transaksi_${new Date().toISOString().split('T')[0]}.csv`);
