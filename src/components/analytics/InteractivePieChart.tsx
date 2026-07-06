@@ -96,12 +96,12 @@ const InteractivePieChart: React.FC<InteractivePieChartProps> = ({
   };
 
   return (
-    <Card className="bg-card backdrop-blur-sm border-border">
+    <Card className="bg-card border-gray-100 dark:border-zinc-800 rounded-3xl shadow-sm">
       <CardHeader className="pb-4">
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
-          <CardTitle className="text-lg font-semibold">{title}</CardTitle>
+          <CardTitle className="text-sm sm:text-base font-extrabold text-foreground">{title}</CardTitle>
           <Select value={viewMode} onValueChange={(value: ViewMode) => setViewMode(value)}>
-            <SelectTrigger className="w-full sm:w-[140px] h-9">
+            <SelectTrigger className="w-full sm:w-[140px] h-9 rounded-xl font-bold">
               <SelectValue />
             </SelectTrigger>
             <SelectContent>

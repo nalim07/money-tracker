@@ -19,7 +19,7 @@ interface FinanceContextType {
   addWallet: (wallet: Omit<Wallet, 'id' | 'balance'>) => Promise<void>;
   updateWallet: (id: string, wallet: Partial<Wallet>) => Promise<void>;
   deleteWallet: (id: string) => Promise<void>;
-  addCategory: (category: Omit<Category, 'id'>) => Promise<void>;
+  addCategory: (category: Omit<Category, 'id'>) => Promise<Category>;
   updateCategory: (id: string, category: Partial<Category>) => Promise<void>;
   deleteCategory: (id: string) => Promise<void>;
   getFinancialSummary: () => FinancialSummary;

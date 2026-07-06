@@ -11,6 +11,7 @@ import { useFinance } from '../contexts/FinanceContext';
 import { parseCsvFile, matchCategories, matchWallets, hasCsvWalletColumn, ParsedTransaction } from '../utils/csvImport';
 import { downloadExampleCSV } from '../utils/csvExport';
 import { toast } from 'sonner';
+import { supabase } from '@/integrations/supabase/client';
 
 interface ImportCSVDialogProps {
   open: boolean;
@@ -105,22 +106,59 @@ export default function ImportCSVDialog({ open, onOpenChange }: ImportCSVDialogP
     for (const [catName, catId] of currentCategoryMap.entries()) {
       if (!catId && catName) {
         try {
+          console.log(`CSV Import: Creating missing category "${catName}"...`);
           const txs = validData.filter(t => t.categoryName === catName);
           const hasIncome = txs.some(t => t.type === 'income');
           const hasExpense = txs.some(t => t.type === 'expense');
           let catType: 'income' | 'expense' | 'both' = 'expense';
           if (hasIncome && hasExpense) catType = 'both';
           else if (hasIncome) catType = 'income';
-          const newCat = await addCategory({ name: catName, type: catType, color: generateColor(catName), icon: 'tag' });
-          if (newCat) {
+          
+          const newCat = await addCategory({ 
+            name: catName, 
+            type: catType, 
+            color: generateColor(catName), 
+            icon: 'tag' 
+          });
+          
+          console.log(`CSV Import: Created category result:`, newCat);
+          if (newCat && newCat.id) {
             currentCategoryMap.set(catName, newCat.id);
           }
-        } catch { console.error(`Failed to create category: ${catName}`); }
+        } catch (e) { 
+          console.error(`CSV Import: Failed to create category: ${catName}`, e); 
+        }
       }
     }
 
+    // Refresh context data to reload all records from Supabase
     await refreshData();
     await new Promise(r => setTimeout(r, 500));
+
+    // Fallback: Re-verify missing categories by querying Supabase directly (bypassing closure trap)
+    try {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (user) {
+        const { data: latestCats } = await supabase
+          .from('categories')
+          .select('id, name')
+          .eq('user_id', user.id);
+          
+        if (latestCats) {
+          for (const [catName, catId] of currentCategoryMap.entries()) {
+            if (!catId && catName) {
+              const matched = latestCats.find(c => c.name.toLowerCase() === catName.toLowerCase());
+              if (matched) {
+                console.log(`CSV Import (Fallback Match): Matched "${catName}" to ID: ${matched.id}`);
+                currentCategoryMap.set(catName, matched.id);
+              }
+            }
+          }
+        }
+      }
+    } catch (e) {
+      console.error('CSV Import: Fallback matching failed', e);
+    }
 
     // Get latest walletMapping (in case user updated it)
     const currentWalletMap = walletMapping;
@@ -171,6 +209,7 @@ export default function ImportCSVDialog({ open, onOpenChange }: ImportCSVDialogP
       setImportedCount(imported); setFailedCount(failed); setSkippedCount(skipped);
       if (i % 5 === 0) await new Promise(r => setTimeout(r, 100));
     }
+    await refreshData();
     setStep('done');
   };
 
@@ -179,7 +218,7 @@ export default function ImportCSVDialog({ open, onOpenChange }: ImportCSVDialogP
 
   return (
     <Dialog open={open} onOpenChange={handleOpenChange}>
-      <DialogContent className="w-[95vw] max-w-2xl mx-auto max-h-[90vh] overflow-hidden flex flex-col">
+      <DialogContent className="w-[95vw] max-w-2xl mx-auto max-h-[90vh] overflow-hidden flex flex-col rounded-3xl">
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2">
             <FileSpreadsheet className="w-5 h-5 text-emerald-500" /> Import CSV

@@ -28,8 +28,13 @@ interface CategoryIconProps {
 }
 
 export const CategoryIcon: React.FC<CategoryIconProps> = ({ icon, className = "w-5 h-5", color }) => {
+  // Check if it's a URL (uploaded image) or base64 first to prevent emoji regex matching digits in base64 strings
+  if (icon.startsWith('http') || icon.startsWith('/') || icon.startsWith('data:')) {
+    return <img src={icon} alt="Category icon" className={`${className} object-cover rounded`} />;
+  }
+
   // Check if it's an emoji
-  if (/\p{Emoji}/u.test(icon)) {
+  if (icon.length <= 4 && /\p{Emoji}/u.test(icon)) {
     return <span className={`${className.includes('w-') ? '' : 'text-lg'}`} style={{ color }}>{icon}</span>;
   }
   
@@ -132,7 +137,7 @@ export const CategoryIcon: React.FC<CategoryIconProps> = ({ icon, className = "w
   }
   
   // Check if it's a URL (uploaded image)
-  if (icon.startsWith('http') || icon.startsWith('/')) {
+  if (icon.startsWith('http') || icon.startsWith('/') || icon.startsWith('data:')) {
     return <img src={icon} alt="Category icon" className={`${className} object-cover rounded`} />;
   }
   

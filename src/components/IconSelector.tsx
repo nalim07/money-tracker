@@ -17,7 +17,7 @@ import {
   Bike, Camera, Laptop, Wallet, CreditCard,
   Coins, DollarSign, Banknote, PiggyBank, Landmark,
   Briefcase, Building, Factory, Store, Fuel,
-  Phone, Mail, Wifi, Lightbulb, Trash2, Recycle
+  Phone, Mail, Wifi, Lightbulb, Trash2, Recycle, Plus
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -137,8 +137,13 @@ export const IconSelector: React.FC<IconSelectorProps> = ({ selectedIcon, onIcon
   };
 
   const renderSelectedIcon = (icon: string) => {
+    // Check if it's a URL (uploaded image) or base64
+    if (icon.startsWith('http') || icon.startsWith('/') || icon.startsWith('data:image/')) {
+      return <img src={icon} alt="Custom icon" className="w-8 h-8 object-cover rounded-xl" />;
+    }
+
     // Check if it's an emoji
-    if (/\p{Emoji}/u.test(icon)) {
+    if (/\p{Emoji}/u.test(icon) && icon.length <= 4) {
       return <span className="text-2xl">{icon}</span>;
     }
     
@@ -155,22 +160,17 @@ export const IconSelector: React.FC<IconSelectorProps> = ({ selectedIcon, onIcon
       return <IconComponent className="w-6 h-6" />;
     }
     
-    // Check if it's a URL (uploaded image)
-    if (icon.startsWith('http') || icon.startsWith('/')) {
-      return <img src={icon} alt="Custom icon" className="w-6 h-6 object-cover rounded" />;
-    }
-    
     // Fallback to text
-    return <span className="text-sm">{icon}</span>;
+    return <span className="text-sm truncate max-w-[200px] block">{icon}</span>;
   };
 
   return (
     <div className="space-y-4">
       <div>
         <Label>Ikon</Label>
-        <div className="mt-2 p-3 border rounded-lg bg-gray-50 flex items-center justify-center min-h-[60px]">
+        <div className="mt-2 p-3 border border-gray-200 dark:border-zinc-800 bg-muted/40 rounded-xl flex items-center justify-center min-h-[60px] text-foreground">
           {selectedIcon && renderSelectedIcon(selectedIcon)}
-          {!selectedIcon && <span className="text-gray-400">Pilih ikon</span>}
+          {!selectedIcon && <span className="text-muted-foreground text-xs font-semibold">Pilih ikon</span>}
         </div>
       </div>
 
@@ -242,28 +242,65 @@ export const IconSelector: React.FC<IconSelectorProps> = ({ selectedIcon, onIcon
           </ScrollArea>
         </TabsContent>
 
-        <TabsContent value="custom" className="mt-4">
-          <div className="space-y-4">
-            <div>
-              <Label htmlFor="custom-icon">URL Ikon atau Emoji</Label>
-              <div className="flex gap-2 mt-2">
-                <Input
-                  id="custom-icon"
-                  value={customIcon}
-                  onChange={(e) => setCustomIcon(e.target.value)}
-                  placeholder="Masukkan URL gambar atau emoji"
-                />
-                <Button 
-                  type="button" 
-                  onClick={handleCustomIconSubmit}
-                  disabled={!customIcon.trim()}
-                >
-                  Tambah
-                </Button>
-              </div>
-              <p className="text-xs text-gray-500 mt-1">
-                Contoh: https://example.com/icon.png atau 🏠
-              </p>
+        <TabsContent value="custom" className="mt-4 space-y-4 animate-in fade-in duration-200">
+          <div>
+            <Label htmlFor="custom-icon">URL Ikon atau Emoji</Label>
+            <div className="flex gap-2 mt-1.5">
+              <Input
+                id="custom-icon"
+                value={customIcon}
+                onChange={(e) => setCustomIcon(e.target.value)}
+                placeholder="Masukkan URL gambar atau emoji"
+                className="rounded-xl border-gray-200 dark:border-zinc-800"
+              />
+              <Button 
+                type="button" 
+                onClick={handleCustomIconSubmit}
+                disabled={!customIcon.trim()}
+                className="rounded-xl"
+              >
+                Gunakan
+              </Button>
+            </div>
+            <p className="text-[10px] text-muted-foreground mt-1">
+              Contoh: https://example.com/logo.png atau 🏦
+            </p>
+          </div>
+
+          <div className="border-t border-dashed border-gray-200 dark:border-zinc-800 my-4" />
+
+          <div>
+            <Label className="text-xs font-bold mb-1.5 block">Upload Foto/Logo (PNG, JPG)</Label>
+            <div className="flex flex-col gap-2">
+              <label 
+                htmlFor="icon-file-upload" 
+                className="flex flex-col items-center justify-center border-2 border-dashed border-gray-200 dark:border-zinc-800 hover:border-primary/50 rounded-2xl p-4 cursor-pointer hover:bg-muted/10 transition-all text-center gap-1.5"
+              >
+                <Plus className="w-5 h-5 text-muted-foreground" />
+                <span className="text-xs font-semibold text-foreground">Klik untuk Pilih File</span>
+                <span className="text-[10px] text-muted-foreground">PNG, JPG, JPEG (Max 1MB)</span>
+              </label>
+              <input 
+                id="icon-file-upload"
+                type="file"
+                accept="image/png, image/jpeg, image/jpg"
+                className="hidden"
+                onChange={(e) => {
+                  const file = e.target.files?.[0];
+                  if (!file) return;
+                  if (file.size > 1 * 1024 * 1024) {
+                    alert("Ukuran gambar terlalu besar! Maksimal 1MB.");
+                    return;
+                  }
+                  const reader = new FileReader();
+                  reader.onloadend = () => {
+                    if (typeof reader.result === 'string') {
+                      onIconSelect(reader.result);
+                    }
+                  };
+                  reader.readAsDataURL(file);
+                }}
+              />
             </div>
           </div>
         </TabsContent>

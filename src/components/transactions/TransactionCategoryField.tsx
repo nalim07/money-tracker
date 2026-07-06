@@ -38,7 +38,7 @@ export default function TransactionCategoryField({ control, categories }: Transa
             value={field.value}
           >
             <FormControl>
-              <SelectTrigger>
+              <SelectTrigger className="rounded-xl border-gray-200 focus-visible:ring-primary dark:border-zinc-800">
                 <SelectValue placeholder="Pilih kategori" />
               </SelectTrigger>
             </FormControl>

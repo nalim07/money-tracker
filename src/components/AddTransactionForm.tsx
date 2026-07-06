@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { DialogHeader, DialogTitle } from './ui/dialog';
 import { Form } from './ui/form';
@@ -13,15 +12,23 @@ import { useAddTransactionForm } from '../hooks/useAddTransactionForm';
 
 interface AddTransactionFormProps {
   onClose?: () => void;
+  defaultWalletId?: string;
+  defaultType?: 'income' | 'expense';
 }
 
-export default function AddTransactionForm({ onClose }: AddTransactionFormProps) {
-  const { form, onSubmit, onSaveAndAddAnother, isLoading, wallets, availableCategories } = useAddTransactionForm({ onClose });
+export default function AddTransactionForm({ onClose, defaultWalletId, defaultType }: AddTransactionFormProps) {
+  const { form, onSubmit, onSaveAndAddAnother, isLoading, wallets, availableCategories } = useAddTransactionForm({ 
+    onClose, 
+    defaultWalletId,
+    defaultType
+  });
 
   return (
     <div className="space-y-4">
       <DialogHeader>
-        <DialogTitle>Tambah Transaksi</DialogTitle>
+        <DialogTitle className="text-sm sm:text-base font-extrabold text-foreground">
+          Tambah Transaksi
+        </DialogTitle>
       </DialogHeader>
 
       <Form {...form}>
@@ -38,11 +45,14 @@ export default function AddTransactionForm({ onClose }: AddTransactionFormProps)
             wallets={wallets} 
           />
           <TransactionDateField control={form.control} />
-          <TransactionFormActions 
-            onClose={onClose} 
-            onSaveAndAddAnother={onSaveAndAddAnother}
-            isLoading={isLoading} 
-          />
+          
+          <div className="pt-2">
+            <TransactionFormActions 
+              onClose={onClose} 
+              onSaveAndAddAnother={onSaveAndAddAnother}
+              isLoading={isLoading} 
+            />
+          </div>
         </form>
       </Form>
     </div>

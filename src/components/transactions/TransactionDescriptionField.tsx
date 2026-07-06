@@ -24,7 +24,7 @@ export default function TransactionDescriptionField({ control }: TransactionDesc
         <FormItem>
           <FormLabel>Deskripsi</FormLabel>
           <FormControl>
-            <Input placeholder="Masukkan deskripsi transaksi" {...field} />
+            <Input placeholder="Masukkan deskripsi transaksi" {...field} className="rounded-xl border-gray-200 focus-visible:ring-primary dark:border-zinc-800" />
           </FormControl>
           <FormMessage />
         </FormItem>

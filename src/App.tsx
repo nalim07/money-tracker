@@ -11,6 +11,7 @@ import Layout from "./components/Layout";
 import ProtectedRoute from "./components/ProtectedRoute";
 import Home from "./pages/Home";
 import Transactions from "./pages/Transactions";
+import Kantong from "./pages/Kantong";
 import Analytics from "./pages/Analytics";
 import Settings from "./pages/Settings";
 import Auth from "./pages/Auth";
@@ -43,6 +44,15 @@ const App = () => (
                   <FinanceProvider>
                     <Layout>
                       <Transactions />
+                    </Layout>
+                  </FinanceProvider>
+                </ProtectedRoute>
+              } />
+              <Route path="/kantong" element={
+                <ProtectedRoute>
+                  <FinanceProvider>
+                    <Layout>
+                      <Kantong />
                     </Layout>
                   </FinanceProvider>
                 </ProtectedRoute>
