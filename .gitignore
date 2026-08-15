@@ -28,3 +28,10 @@ dist-ssr
 
 # Deploy script (berisi referensi ke kredensial, tidak perlu di-commit)
 # deploy.js
+
+# Vercel
+.vercel
+.env*
+
+# Supabase CLI local metadata/cache
+supabase/.temp/
