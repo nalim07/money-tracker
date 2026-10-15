@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useFinance } from '../../contexts/FinanceContext';
 import { Card, CardContent } from '@/components/ui/card';
 import { useNavigate } from 'react-router-dom';
@@ -26,6 +26,12 @@ const WalletGroupsView: React.FC = () => {
   const [activeTopUpWalletId, setActiveTopUpWalletId] = useState<string | null>(null);
   const [activeTransferWalletId, setActiveTransferWalletId] = useState<string | null>(null);
   const [sortBy, setSortBy] = useState<'name' | 'balance-desc' | 'balance-asc'>('name');
+  const [currentTime, setCurrentTime] = useState(() => Date.now());
+
+  useEffect(() => {
+    const intervalId = window.setInterval(() => setCurrentTime(Date.now()), 60_000);
+    return () => window.clearInterval(intervalId);
+  }, []);
 
   const getSortLabel = (type: string) => {
     switch (type) {
@@ -73,6 +79,32 @@ const WalletGroupsView: React.FC = () => {
       currency: 'IDR',
       minimumFractionDigits: 0,
     }).format(amount);
+  };
+
+  const getWalletActivityLabel = (walletId: string) => {
+    const latestTransaction = transactions
+      .filter((transaction) => transaction.wallet === walletId)
+      .reduce<(typeof transactions)[number] | null>((latest, transaction) => {
+        if (!latest || transaction.createdAt.getTime() > latest.createdAt.getTime()) {
+          return transaction;
+        }
+        return latest;
+      }, null);
+
+    if (!latestTransaction) return 'Belum ada riwayat transaksi';
+
+    const elapsedMinutes = Math.floor((currentTime - latestTransaction.createdAt.getTime()) / 60_000);
+    if (elapsedMinutes < 1) return 'Diperbarui baru saja';
+    if (elapsedMinutes < 60) return `Diperbarui ${elapsedMinutes} menit lalu`;
+
+    const elapsedHours = Math.floor(elapsedMinutes / 60);
+    if (elapsedHours < 24) return `Diperbarui ${elapsedHours} jam lalu`;
+
+    return `Diperbarui ${latestTransaction.createdAt.toLocaleDateString('id-ID', {
+      day: 'numeric',
+      month: 'short',
+      year: 'numeric',
+    })}`;
   };
 
   if (wallets.length === 0) {
@@ -303,7 +335,7 @@ const WalletGroupsView: React.FC = () => {
                         <span className="text-sm sm:text-base font-extrabold text-foreground block">
                           {formatCurrency(balance)}
                         </span>
-                        <span className="text-[9px] text-muted-foreground mt-0.5 block">Diperbarui baru saja</span>
+                        <span className="text-[9px] text-muted-foreground mt-0.5 block">{getWalletActivityLabel(wallet.id)}</span>
                       </div>
                     </div>
 
@@ -486,7 +518,7 @@ const WalletGroupsView: React.FC = () => {
             <div className="flex items-center justify-between">
               <h3 className="text-sm sm:text-base font-extrabold text-foreground">Transfer Cepat (Personal)</h3>
               <button 
-                onClick={() => setActiveTransferWallet(true)}
+                onClick={() => setActiveTransferWalletId(wallets[0]?.id ?? null)}
                 className="text-xs font-bold text-[#7357FF] hover:underline"
               >
                 Transfer Baru
