@@ -268,7 +268,6 @@ export default function Home() {
   }
 
   const expenseTransactions = currentMonthTransactions.filter(t => t.type === 'expense');
-  const totalExpense = expenseTransactions.reduce((sum, t) => sum + t.amount, 0);
 
   const categorySums: Record<string, number> = {};
   expenseTransactions.forEach(t => {
@@ -282,8 +281,7 @@ export default function Home() {
         id: catId,
         name: categoryObj?.name || catId,
         amount,
-        color: categoryObj?.color || '#FFB400',
-        pct: totalExpense > 0 ? Math.round((amount / totalExpense) * 100) : 0
+        color: categoryObj?.color || '#FFB400'
       };
     })
     .sort((a, b) => b.amount - a.amount)
@@ -311,17 +309,10 @@ export default function Home() {
   const centerLabel = income > 0 ? 'Sisa' : 'Total Keluar';
   const centerAmount = income > 0 ? remaining : expense;
 
-  const myWallets = wallets.map(wallet => {
-    const balance = getWalletBalance(wallet.id);
-    const target = 10000000; 
-    const pct = Math.min(100, Math.round((balance / target) * 100));
-    return {
-      ...wallet,
-      balance,
-      target,
-      pct
-    };
-  });
+  const myWallets = wallets.map((wallet) => ({
+    ...wallet,
+    balance: getWalletBalance(wallet.id),
+  }));
 
   return (
     <div className="space-y-6 w-full pb-12">
@@ -889,23 +880,12 @@ export default function Home() {
                       </div>
                       <div className="flex-1 min-w-0">
                         <span className="text-xs sm:text-sm font-bold text-foreground block truncate">{wallet.name}</span>
-                        {/* Target progress bar */}
-                        <div className="w-full bg-muted dark:bg-zinc-800 h-1.5 rounded-full mt-2.5 overflow-hidden">
-                          <div 
-                            className="h-full rounded-full transition-all duration-500" 
-                            style={{ 
-                              width: `${wallet.pct}%`, 
-                              backgroundColor: wallet.color 
-                            }}
-                          />
-                        </div>
                       </div>
                     </div>
                     <div className="text-right pl-4">
                       <span className="text-xs sm:text-sm font-extrabold text-foreground block">
                         Rp {wallet.balance.toLocaleString('id-ID')}
                       </span>
-                      <span className="text-[10px] text-muted-foreground mt-0.5 block">{wallet.pct}% dari target</span>
                     </div>
                   </div>
                 ))
@@ -938,7 +918,7 @@ export default function Home() {
             <div className="space-y-4">
               {topCategories.length > 0 ? (
                 topCategories.map(cat => (
-                  <div key={cat.id} className="space-y-2">
+                  <div key={cat.id}>
                     <div className="flex items-center justify-between text-xs font-medium">
                       <div className="flex items-center gap-2">
                         <div 
@@ -947,19 +927,7 @@ export default function Home() {
                         />
                         <span className="text-foreground">{cat.name}</span>
                       </div>
-                      <div className="flex items-center gap-2">
-                        <span className="text-muted-foreground text-[10px]">{cat.pct}%</span>
-                        <span className="font-bold text-foreground">Rp {cat.amount.toLocaleString('id-ID')}</span>
-                      </div>
-                    </div>
-                    <div className="w-full bg-muted dark:bg-zinc-800 h-1.5 rounded-full overflow-hidden">
-                      <div 
-                        className="h-full rounded-full transition-all duration-500" 
-                        style={{ 
-                          width: `${cat.pct}%`, 
-                          backgroundColor: cat.color 
-                        }}
-                      />
+                      <span className="font-bold text-foreground">Rp {cat.amount.toLocaleString('id-ID')}</span>
                     </div>
                   </div>
                 ))

@@ -1,6 +1,6 @@
 
 import React, { useState } from 'react';
-import { Dialog, DialogContent, DialogTrigger } from './ui/dialog';
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from './ui/dialog';
 import { Button } from './ui/button';
 import { ArrowLeftRight } from 'lucide-react';
 import BalanceTransferForm from './BalanceTransferForm';
@@ -29,6 +29,10 @@ export default function BalanceTransferDialog({
         )}
       </DialogTrigger>
       <DialogContent className="sm:max-w-[425px] rounded-3xl">
+        <DialogHeader className="pr-8">
+          <DialogTitle>Transfer Saldo</DialogTitle>
+          <DialogDescription>Transfer saldo antar dompet Anda.</DialogDescription>
+        </DialogHeader>
         <BalanceTransferForm 
           onClose={() => setOpen(false)} 
           defaultSourceWalletId={defaultSourceWalletId}

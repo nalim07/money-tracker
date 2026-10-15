@@ -1,11 +1,9 @@
-
 import React, { useState } from 'react';
 import { useFinance } from '../contexts/FinanceContext';
 import { Button } from './ui/button';
 import { Input } from './ui/input';
 import { Label } from './ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from './ui/select';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from './ui/card';
 import { ArrowRight } from 'lucide-react';
 
 interface BalanceTransferFormProps {
@@ -14,78 +12,69 @@ interface BalanceTransferFormProps {
   defaultDestinationWalletId?: string;
 }
 
-export default function BalanceTransferForm({ 
+export default function BalanceTransferForm({
   onClose,
   defaultSourceWalletId,
-  defaultDestinationWalletId
+  defaultDestinationWalletId,
 }: BalanceTransferFormProps) {
   const { wallets, categories, addTransaction } = useFinance();
   const [sourceWallet, setSourceWallet] = useState(defaultSourceWalletId || '');
   const [destinationWallet, setDestinationWallet] = useState(defaultDestinationWalletId || '');
   const [amount, setAmount] = useState('');
   const [description, setDescription] = useState('');
+  const [date, setDate] = useState(() => new Date().toISOString().slice(0, 10));
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    
-    if (!sourceWallet || !destinationWallet || !amount) {
-      return;
-    }
+  const handleSubmit = async (event: React.FormEvent) => {
+    event.preventDefault();
+
+    if (!sourceWallet || !destinationWallet || !amount || !date) return;
 
     if (sourceWallet === destinationWallet) {
-      alert('Source and destination wallets must be different');
+      alert('Dompet asal dan tujuan harus berbeda');
       return;
     }
 
-    const transferAmount = parseFloat(amount);
-    if (transferAmount <= 0) {
-      alert('Transfer amount must be greater than 0');
+    const transferAmount = Number(amount);
+    if (!Number.isSafeInteger(transferAmount) || transferAmount <= 0) {
+      alert('Jumlah transfer harus lebih dari Rp 0');
       return;
     }
 
     setIsSubmitting(true);
 
     try {
-      const transferDescription = description || 'Transfer antar dompet';
-      
-      // Try to find a category named 'Transfer' to get its ID
-      const transferCategory = categories.find(c => 
-        c.name.toLowerCase() === 'transfer' || 
-        c.name.toLowerCase() === 'saldo'
+      const transferDescription = description.trim() || 'Transfer antar dompet';
+      const transferDate = new Date(`${date}T12:00:00`);
+      const transferCategory = categories.find((category) =>
+        category.name.toLowerCase() === 'transfer' || category.name.toLowerCase() === 'saldo',
       );
-      
       const categoryId = transferCategory ? transferCategory.id : 'Transfer';
 
-      // Create expense transaction from source wallet
       await addTransaction({
         type: 'expense',
         amount: transferAmount,
         description: `${transferDescription} (keluar)`,
         category: categoryId,
         wallet: sourceWallet,
-        date: new Date(),
+        date: transferDate,
       });
 
-      // Create income transaction to destination wallet
       await addTransaction({
         type: 'income',
         amount: transferAmount,
         description: `${transferDescription} (masuk)`,
         category: categoryId,
         wallet: destinationWallet,
-        date: new Date(),
+        date: transferDate,
       });
 
-      // Reset form
       setSourceWallet('');
       setDestinationWallet('');
       setAmount('');
       setDescription('');
-
-      if (onClose) {
-        onClose();
-      }
+      setDate(new Date().toISOString().slice(0, 10));
+      onClose?.();
     } catch (error) {
       console.error('Error creating transfer:', error);
       alert('Gagal melakukan transfer');
@@ -94,123 +83,114 @@ export default function BalanceTransferForm({
     }
   };
 
-  const sourceWalletData = wallets.find(w => w.id === sourceWallet);
-  const destinationWalletData = wallets.find(w => w.id === destinationWallet);
+  const sourceWalletData = wallets.find((wallet) => wallet.id === sourceWallet);
+  const destinationWalletData = wallets.find((wallet) => wallet.id === destinationWallet);
 
   return (
-    <Card className="w-full max-w-md mx-auto">
-      <CardHeader>
-        <CardTitle>Transfer Saldo</CardTitle>
-        <CardDescription>
-          Transfer saldo antar dompet Anda
-        </CardDescription>
-      </CardHeader>
-      <CardContent>
-        <form onSubmit={handleSubmit} className="space-y-4">
-          <div className="space-y-2">
-            <Label htmlFor="sourceWallet">Dompet Asal</Label>
-            <Select value={sourceWallet} onValueChange={setSourceWallet}>
-              <SelectTrigger>
-                <SelectValue placeholder="Pilih dompet asal" />
-              </SelectTrigger>
-              <SelectContent>
-                {wallets.map((wallet) => (
-                  <SelectItem key={wallet.id} value={wallet.id}>
-                    <div className="flex items-center space-x-2">
-                      <span 
-                        className="w-3 h-3 rounded-full" 
-                        style={{ backgroundColor: wallet.color }}
-                      />
-                      <span>{wallet.name}</span>
-                    </div>
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          </div>
+    <form onSubmit={handleSubmit} className="space-y-4">
+      <div className="space-y-2">
+        <Label htmlFor="sourceWallet">Dompet Asal</Label>
+        <Select value={sourceWallet} onValueChange={setSourceWallet}>
+          <SelectTrigger id="sourceWallet">
+            <SelectValue placeholder="Pilih dompet asal" />
+          </SelectTrigger>
+          <SelectContent>
+            {wallets.map((wallet) => (
+              <SelectItem key={wallet.id} value={wallet.id}>
+                <div className="flex items-center gap-2">
+                  <span className="h-3 w-3 rounded-full" style={{ backgroundColor: wallet.color }} />
+                  <span>{wallet.name}</span>
+                </div>
+              </SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
+      </div>
 
-          <div className="flex justify-center">
-            <ArrowRight className="w-5 h-5 text-muted-foreground" />
-          </div>
+      <div className="flex justify-center" aria-hidden="true">
+        <ArrowRight className="h-5 w-5 text-muted-foreground" />
+      </div>
 
-          <div className="space-y-2">
-            <Label htmlFor="destinationWallet">Dompet Tujuan</Label>
-            <Select value={destinationWallet} onValueChange={setDestinationWallet}>
-              <SelectTrigger>
-                <SelectValue placeholder="Pilih dompet tujuan" />
-              </SelectTrigger>
-              <SelectContent>
-                {wallets
-                  .filter(wallet => wallet.id !== sourceWallet)
-                  .map((wallet) => (
-                    <SelectItem key={wallet.id} value={wallet.id}>
-                      <div className="flex items-center space-x-2">
-                        <span 
-                          className="w-3 h-3 rounded-full" 
-                          style={{ backgroundColor: wallet.color }}
-                        />
-                        <span>{wallet.name}</span>
-                      </div>
-                    </SelectItem>
-                  ))}
-              </SelectContent>
-            </Select>
-          </div>
+      <div className="space-y-2">
+        <Label htmlFor="destinationWallet">Dompet Tujuan</Label>
+        <Select value={destinationWallet} onValueChange={setDestinationWallet}>
+          <SelectTrigger id="destinationWallet">
+            <SelectValue placeholder="Pilih dompet tujuan" />
+          </SelectTrigger>
+          <SelectContent>
+            {wallets.filter((wallet) => wallet.id !== sourceWallet).map((wallet) => (
+              <SelectItem key={wallet.id} value={wallet.id}>
+                <div className="flex items-center gap-2">
+                  <span className="h-3 w-3 rounded-full" style={{ backgroundColor: wallet.color }} />
+                  <span>{wallet.name}</span>
+                </div>
+              </SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
+      </div>
 
-          <div className="space-y-2">
-            <Label htmlFor="amount">Jumlah Transfer</Label>
-            <Input
-              id="amount"
-              type="text"
-              value={amount !== '' ? new Intl.NumberFormat('id-ID').format(Number(amount)) : ''}
-              onChange={(e) => {
-                const clean = e.target.value.replace(/\D/g, '');
-                setAmount(clean);
-              }}
-              placeholder="0"
-              required
-            />
-          </div>
+      <div className="space-y-2">
+        <Label htmlFor="amount">Jumlah Transfer</Label>
+        <Input
+          id="amount"
+          inputMode="numeric"
+          type="text"
+          value={amount ? new Intl.NumberFormat('id-ID').format(Number(amount)) : ''}
+          onChange={(event) => setAmount(event.target.value.replace(/\D/g, ''))}
+          placeholder="0"
+          required
+        />
+      </div>
 
-          <div className="space-y-2">
-            <Label htmlFor="description">Keterangan (Opsional)</Label>
-            <Input
-              id="description"
-              value={description}
-              onChange={(e) => setDescription(e.target.value)}
-              placeholder="Transfer saldo"
-            />
-          </div>
+      <div className="space-y-2">
+        <Label htmlFor="transfer-date">Tanggal Transfer</Label>
+        <Input
+          id="transfer-date"
+          type="date"
+          value={date}
+          onChange={(event) => setDate(event.target.value)}
+          required
+        />
+      </div>
 
-          {sourceWalletData && destinationWalletData && amount && (
-            <div className="p-3 bg-muted rounded-md text-sm">
-              <div className="flex justify-between items-center mb-1">
-                <span>Dari: {sourceWalletData.name}</span>
-                <span className="text-red-600">-Rp {parseFloat(amount).toLocaleString('id-ID')}</span>
-              </div>
-              <div className="flex justify-between items-center">
-                <span>Ke: {destinationWalletData.name}</span>
-                <span className="text-green-600">+Rp {parseFloat(amount).toLocaleString('id-ID')}</span>
-              </div>
-            </div>
-          )}
+      <div className="space-y-2">
+        <Label htmlFor="description">Keterangan (Opsional)</Label>
+        <Input
+          id="description"
+          value={description}
+          onChange={(event) => setDescription(event.target.value)}
+          placeholder="Transfer saldo"
+        />
+      </div>
 
-          <div className="flex space-x-2">
-            {onClose && (
-              <Button type="button" variant="outline" onClick={onClose} className="flex-1">
-                Batal
-              </Button>
-            )}
-            <Button 
-              type="submit" 
-              className="flex-1"
-              disabled={isSubmitting || !sourceWallet || !destinationWallet || !amount}
-            >
-              {isSubmitting ? 'Memproses...' : 'Transfer'}
-            </Button>
+      {sourceWalletData && destinationWalletData && amount && (
+        <div className="rounded-md bg-muted p-3 text-sm">
+          <div className="mb-1 flex items-center justify-between">
+            <span>Dari: {sourceWalletData.name}</span>
+            <span className="text-red-600">-Rp {Number(amount).toLocaleString('id-ID')}</span>
           </div>
-        </form>
-      </CardContent>
-    </Card>
+          <div className="flex items-center justify-between">
+            <span>Ke: {destinationWalletData.name}</span>
+            <span className="text-green-600">+Rp {Number(amount).toLocaleString('id-ID')}</span>
+          </div>
+        </div>
+      )}
+
+      <div className="flex gap-2 pt-1">
+        {onClose && (
+          <Button type="button" variant="outline" onClick={onClose} className="flex-1">
+            Batal
+          </Button>
+        )}
+        <Button
+          type="submit"
+          className="flex-1"
+          disabled={isSubmitting || !sourceWallet || !destinationWallet || !amount || !date}
+        >
+          {isSubmitting ? 'Memproses...' : 'Transfer'}
+        </Button>
+      </div>
+    </form>
   );
 }
